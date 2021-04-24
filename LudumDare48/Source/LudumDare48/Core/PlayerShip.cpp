@@ -22,28 +22,37 @@ void APlayerShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	float rotationToApply = 0.0f;
-	if (IsMovementFlagSet(RotateLeft) != IsMovementFlagSet(RotateRight))
+	if (FuelLevel > 0.0f)
 	{
-		if (IsMovementFlagSet(RotateRight))
+		float rotationToApply = 0.0f;
+		if (IsMovementFlagSet(RotateLeft) != IsMovementFlagSet(RotateRight))
 		{
-			AddControllerYawInput(RotationalSpeed * DeltaTime);
+			 
+			if (IsMovementFlagSet(RotateRight))
+			{
+				AddControllerYawInput(RotationalSpeed * DeltaTime);
+			}
+			else
+			{
+				AddControllerYawInput(-RotationalSpeed * DeltaTime);
+			}
 		}
-		else
+		if (IsMovementFlagSet(ThrustDown) != IsMovementFlagSet(ThrustUp))
 		{
-			AddControllerYawInput(-RotationalSpeed * DeltaTime);
+			if (IsMovementFlagSet(ThrustUp))
+			{
+				m_thrustLevel += RocketPower;
+			}
+			else
+			{
+				m_thrustLevel = FMath::Max(0.0f, m_thrustLevel - RocketPower);
+			}
 		}
+		FuelLevel = FMath::Max(0.0f, FuelLevel - m_thrustLevel);
 	}
-	if (IsMovementFlagSet(ThrustDown) != IsMovementFlagSet(ThrustUp))
+	else
 	{
-		if (IsMovementFlagSet(ThrustUp))
-		{
-			m_thrustLevel += RocketPower;
-		}
-		else
-		{
-			m_thrustLevel = FMath::Max(0.0f, m_thrustLevel - RocketPower);
-		}
+		m_thrustLevel = 0.0f;
 	}
 
 	AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
@@ -63,6 +72,11 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustUp", IE_Released, this, &APlayerShip::ClearMovementFlag, E_Movement::ThrustUp);
 	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Pressed, this, &APlayerShip::SetMovementFlag, E_Movement::ThrustDown);
 	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Released, this, &APlayerShip::ClearMovementFlag, E_Movement::ThrustDown);
+}
+
+float APlayerShip::GetFuelRemainingAsPercentage() const
+{
+	return FuelLevel / MaxFuel * 100.0f;
 }
 
 bool APlayerShip::IsMovementFlagSet(const E_Movement flag) const
