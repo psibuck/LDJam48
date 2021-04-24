@@ -38,12 +38,21 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	float GetFuelRemainingAsPercentage() const;
+
 protected:
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deep Space | Initial Settings")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
 	float RotationalSpeed{ 5.0f };
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deep Space | Initial Settings")
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
 	float RocketPower{ 0.2f };
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
+	float MaxFuel{ 1000.0f };
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
+	float FuelLevel{ 200.0f };
 
 private:
 	bool IsMovementFlagSet(const E_Movement flag) const;
