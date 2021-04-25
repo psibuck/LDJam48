@@ -45,13 +45,20 @@ public:
 	float GetFuelRemainingAsPercentage() const;
 
 	UFUNCTION(BlueprintCallable)
-	FString GetFuelString(const float fuel_remaining) const;
+	FString GetFuelString(const int fuel_remaining) const;
+
+	UFUNCTION( BlueprintCallable )
+		float GetDistanceFromOrigin() const;
+
+	UFUNCTION( BlueprintCallable )
+	float GetFuelGageSectionOpacity( const int gage_section ) const;
 
 	UFUNCTION(BlueprintCallable)
 	float GetHullIntegrityAsPercentage() const;
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessAsteroidCollision();
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
 	float RotationalSpeed{ 5.0f };
