@@ -8,7 +8,6 @@ APlayerShip::APlayerShip()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +48,9 @@ void APlayerShip::Tick(float DeltaTime)
 			}
 		}
 		FuelLevel = FMath::Max(0.0f, FuelLevel - m_thrustLevel);
+
+		const FText fuelMessage = FText::Format(FText::FromString("Fuel Level: {0}"), GetFuelRemainingAsPercentage());
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, fuelMessage.ToString());
 	}
 	else
 	{
@@ -56,9 +58,6 @@ void APlayerShip::Tick(float DeltaTime)
 	}
 
 	AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
-
-	const FText fuelMessage = FText::Format(FText::FromString("Fuel Level: {0}"), GetFuelRemainingAsPercentage());
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, fuelMessage.ToString());
 }
 
 // Called to bind functionality to input
@@ -79,7 +78,10 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerShip::Refuel()
 {
-	FuelLevel = 0.0f;
+	FuelLevel = MaxFuel;
+
+	const FText fuelMessage = FText::Format(FText::FromString("Fuel Level: {0}, Hull Integrity: {1}"), GetFuelRemainingAsPercentage(), GetHullIntegrityAsPercentage());
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, fuelMessage.ToString());
 }
 
 float APlayerShip::GetFuelRemainingAsPercentage() const
@@ -87,18 +89,43 @@ float APlayerShip::GetFuelRemainingAsPercentage() const
 	return FuelLevel / MaxFuel * 100.0f;
 }
 
+float APlayerShip::GetHullIntegrityAsPercentage() const
+{
+	return m_currentHullIntegrity / StartHullIntegrity * 100.0f;
+}
+
+void APlayerShip::ProcessAsteroidCollision()
+{
+	m_currentHullIntegrity = FMath::Max(0.0f, m_currentHullIntegrity - AsteroidDamage);
+
+	const FText hullMessage = FText::Format(FText::FromString("Hull Level: {0}"), m_currentHullIntegrity);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, hullMessage.ToString());
+
+	if (m_currentHullIntegrity == 0)
+	{
+		ProcessShipDeath();
+	}
+}
+
+void APlayerShip::ProcessShipDeath()
+{
+	FuelLevel = 0.0f;
+
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("We are dead"));
+}
+
 bool APlayerShip::IsMovementFlagSet(const E_Movement flag) const
 {
-	return (m_rotationControl & static_cast<E_Movement>(flag)) == static_cast<E_Movement>(flag);
+	return (m_shipMovementFlags & static_cast<E_Movement>(flag)) == static_cast<E_Movement>(flag);
 }
 
 void APlayerShip::SetMovementFlag(const E_Movement flag)
 {
-	m_rotationControl |= flag;
+	m_shipMovementFlags |= flag;
 }
 
 void APlayerShip::ClearMovementFlag(const E_Movement flag)
 {
-	m_rotationControl &= ~(flag);
+	m_shipMovementFlags &= ~(flag);
 }
 
