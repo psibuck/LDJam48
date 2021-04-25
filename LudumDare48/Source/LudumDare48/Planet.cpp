@@ -8,14 +8,6 @@ APlanet::APlanet()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Set up components
-	body = CreateDefaultSubobject<USphereComponent>(TEXT("Planet Body"));
-	body->SetupAttachment(RootComponent);
-
-	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Planet Mesh"));
-
-	material = CreateDefaultSubobject<UMaterialInterface>(TEXT("Planet Material"));
 }
 
 // Called when the game starts or when spawned

@@ -36,13 +36,6 @@ protected:
 
 public:
 
-	// Planet body
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deep Space | Visual Settings")
-	class USphereComponent* body;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deep Space | Visual Settings")
-	class UStaticMeshComponent* mesh;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Deep Space | Visual Settings")
 	class UMaterialInterface* material;
 };
