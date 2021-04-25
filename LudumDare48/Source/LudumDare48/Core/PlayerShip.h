@@ -16,7 +16,7 @@ enum E_Movement
 	ThrustDown = 1 << 3
 };
 
-DECLARE_DELEGATE_OneParam( FRotationInputComponent, const E_Movement );
+DECLARE_DELEGATE_OneParam(FRotationInputComponent, const E_Movement);
 
 UCLASS()
 class LUDUMDARE48_API APlayerShip : public ACharacter
@@ -33,49 +33,57 @@ protected:
 
 public:
 	// Called every frame
-	virtual void Tick( float DeltaTime ) override;
+	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent( class UInputComponent* PlayerInputComponent ) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION( BlueprintCallable )
-		void Refuel();
+	UFUNCTION(BlueprintCallable)
+	void Refuel();
 
-	UFUNCTION( BlueprintCallable )
-		float GetFuelRemainingAsPercentage() const;
+	UFUNCTION(BlueprintCallable)
+	float GetFuelRemainingAsPercentage() const;
 
-	UFUNCTION( BlueprintCallable )
-		FString GetFuelString( const int fuel_remaining ) const;
+	UFUNCTION(BlueprintCallable)
+	FString GetFuelString(const float fuel_remaining) const;
 
-	UFUNCTION( BlueprintCallable )
-		float GetDistanceFromOrigin() const;
+	UFUNCTION(BlueprintCallable)
+	float GetHullIntegrityAsPercentage() const;
 
-	UFUNCTION( BlueprintCallable )
-		float GetFuelGageSectionOpacity( const int gage_section ) const;
-
+	UFUNCTION(BlueprintCallable)
+	void ProcessAsteroidCollision();
 protected:
-	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
-		float RotationalSpeed{ 5.0f };
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
+	float RotationalSpeed{ 5.0f };
 
-	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
-		float RocketPower{ 0.2f };
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
+	float RocketPower{ 0.2f };
 
-	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
-		float MaxFuel{ 1000.0f };
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
+	float MaxFuel{ 1000.0f };
+	
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
+	float FuelLevel{ 200.0f };
 
-	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
-		float FuelLevel{ 200.0f };
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
+	int AsteroidDamage{ 5 };
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
+	float StartHullIntegrity{ 100 };
 
 private:
-	bool IsMovementFlagSet( const E_Movement flag ) const;
+	void ProcessShipDeath();
+
+	bool IsMovementFlagSet(const E_Movement flag) const;
 
 	UFUNCTION()
-		void SetMovementFlag( const E_Movement flag );
-
+	void SetMovementFlag(const E_Movement flag);
+	
 	UFUNCTION()
-		void ClearMovementFlag( const E_Movement flag );
+	void ClearMovementFlag(const E_Movement flag);
 
 	float m_thrustLevel{ 0.0f };
+	float m_currentHullIntegrity{ StartHullIntegrity };
 
-	int8 m_rotationControl{ 0 };
+	int8 m_shipMovementFlags{ 0 };
 };

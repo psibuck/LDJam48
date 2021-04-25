@@ -9,9 +9,11 @@
 #include "CoreMinimal.h"
 
 #include "Math/IntPoint.h"
-#include "Math/Vector2D.h"
+#include "Math/Vector.h"
 
+#include "Asteroid.h"
 #include "Planet.h"
+
 #include "PlanetProcGen.generated.h"
 
 UCLASS(Blueprintable)
@@ -24,18 +26,27 @@ public:
 	bool ShouldPixelContainPlanet(FIntPoint pixel);
 
 	UFUNCTION(BlueprintCallable)
-	void ProcGenAroundPlayer(FVector2D position);
+	void ProcGenAroundPlayer(FVector position);
 
 	UPROPERTY(BlueprintReadWrite)
 	TSet<FIntPoint> blankPixels;
 
 	UPROPERTY(BlueprintReadWrite)
-	int randomSeed{ 0 };
+	int randomSeed{ 37242047 };
+
+	UPROPERTY(EditDefaultsOnly)
+	int cSparsity{ 100 };
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlanet> defaultPlanetClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AAsteroid> defaultAsteroidClass;
+
 private:
+
+	int GetGridStep() const;
+	int GenerateSparsityModulo(int value) const;
 
 	UPROPERTY()
 	TMap<FIntPoint, APlanet *> planetData;
