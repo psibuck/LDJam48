@@ -42,13 +42,12 @@ void APlayerShip::Tick(float DeltaTime)
 			if (IsShipStatusFlagSet(ThrustUp))
 			{
 				m_thrustLevel += RocketPower;
+				fuelToAdd -= RocketBurnFuelCost;
 			}
 			else
 			{
 				m_thrustLevel = FMath::Max(0.0f, m_thrustLevel - RocketPower);
 			}
-
-			fuelToAdd -= RocketBurnFuelCost;
 		}
 	}
 	else
