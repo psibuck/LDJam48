@@ -23,8 +23,6 @@ class LUDUMDARE48_API UPlanetProcGen : public UObject
 
 public:
 
-	bool ShouldPixelContainPlanet(FIntPoint pixel);
-
 	UFUNCTION(BlueprintCallable)
 	void ProcGenAroundPlayer(FVector position);
 
@@ -44,6 +42,10 @@ public:
 	TSubclassOf<AAsteroid> defaultAsteroidClass;
 
 private:
+
+	bool ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient);
+	bool ShouldPixelContainPlanet(FIntPoint pixel);
+	bool ShouldPixelContainAsteroid(FIntPoint pixel);
 
 	int GetGridStep() const;
 	int GenerateSparsityModulo(int value) const;

@@ -6,24 +6,32 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Math/UnrealMathUtility.h"
 
-bool UPlanetProcGen::ShouldPixelContainPlanet(FIntPoint pixel)
+bool UPlanetProcGen::ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient)
 {
-	/*
-	Procedurally generates the position of a planet inside this pixel if we determine that one should exist.
-	*/
+	// Procedurally determines whether this pixel should contain an object given the following coefficients
 
 	const int GRID_STEP = GetGridStep();
 
 	const int baseX = FMath::Abs(pixel.X / cSparsity);
 	const int baseY = FMath::Abs(pixel.Y / cSparsity);
 
-	const int baseXModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseX + (3 * baseY))), 1);
-	const int baseYModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseY + (7 * baseX))), 1);
+	const int baseXModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseX + (xCoefficient * baseY))), 1);
+	const int baseYModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseY + (yCoefficient * baseX))), 1);
 
-	const int xModulo = FMath::Clamp( baseXModulo - (baseXModulo % GRID_STEP), GRID_STEP, cSparsity - GRID_STEP);
-	const int yModulo = FMath::Clamp( baseYModulo - (baseYModulo % GRID_STEP), GRID_STEP, cSparsity + GRID_STEP);
+	const int xModulo = FMath::Clamp(baseXModulo - (baseXModulo % GRID_STEP), GRID_STEP, cSparsity - GRID_STEP);
+	const int yModulo = FMath::Clamp(baseYModulo - (baseYModulo % GRID_STEP), GRID_STEP, cSparsity + GRID_STEP);
 
 	return pixel.X % cSparsity == xModulo && pixel.Y % cSparsity == yModulo;
+}
+
+bool UPlanetProcGen::ShouldPixelContainPlanet(FIntPoint pixel)
+{
+	return ShouldGenerateObjectInLocationWithCoefficients(pixel, 3, 7);
+}
+
+bool UPlanetProcGen::ShouldPixelContainAsteroid(FIntPoint pixel)
+{
+	return ShouldGenerateObjectInLocationWithCoefficients(pixel, 6, 2);
 }
 
 void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
@@ -43,6 +51,7 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 		for ( int column_index = yMin; column_index < yMax; column_index += GRID_STEP )
 		{
 			FIntPoint gridPoint{ row_index, column_index };
+			FVector location{ static_cast<float>(row_index) + 0.5f, static_cast<float>(column_index) + 0.5f, position.Z };
 
 			if (blankPixels.Find(gridPoint) || planetData.Find(gridPoint))
 			{
@@ -50,13 +59,18 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 			}
 			else if (ShouldPixelContainPlanet( gridPoint ))
 			{
-				FVector location{ static_cast<float>(row_index) + 0.5f, static_cast<float>(column_index) + 0.5f, position.Z };
 				APlanet* newPlanet = GetWorld()->SpawnActor<APlanet>(defaultPlanetClass, location, FRotator::ZeroRotator);
 				planetData.Add(gridPoint, newPlanet);
 			}
 			else
 			{
 				blankPixels.Add(gridPoint);
+
+				if (ShouldPixelContainAsteroid(gridPoint))
+				{
+					AAsteroid* newAsteroid = GetWorld()->SpawnActor<AAsteroid>(defaultAsteroidClass, location, FRotator::ZeroRotator);
+					newAsteroid->SetVelocity(FVector2D(position - location));
+				}
 			}
 		}
 	}
