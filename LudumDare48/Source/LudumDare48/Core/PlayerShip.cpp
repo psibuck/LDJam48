@@ -21,13 +21,14 @@ void APlayerShip::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	float fuelToAdd{ 0.0f };
 	if (FuelLevel > 0.0f)
 	{
 		float rotationToApply = 0.0f;
-		if (IsMovementFlagSet(RotateLeft) != IsMovementFlagSet(RotateRight))
+		if (IsShipStatusFlagSet(RotateLeft) != IsShipStatusFlagSet(RotateRight))
 		{
 			 
-			if (IsMovementFlagSet(RotateRight))
+			if (IsShipStatusFlagSet(RotateRight))
 			{
 				AddControllerYawInput(RotationalSpeed * DeltaTime);
 			}
@@ -36,9 +37,9 @@ void APlayerShip::Tick(float DeltaTime)
 				AddControllerYawInput(-RotationalSpeed * DeltaTime);
 			}
 		}
-		if (IsMovementFlagSet(ThrustDown) != IsMovementFlagSet(ThrustUp))
+		if (IsShipStatusFlagSet(ThrustDown) != IsShipStatusFlagSet(ThrustUp))
 		{
-			if (IsMovementFlagSet(ThrustUp))
+			if (IsShipStatusFlagSet(ThrustUp))
 			{
 				m_thrustLevel += RocketPower;
 			}
@@ -46,19 +47,23 @@ void APlayerShip::Tick(float DeltaTime)
 			{
 				m_thrustLevel = FMath::Max(0.0f, m_thrustLevel - RocketPower);
 			}
-		}
-		FuelLevel = FMath::Max(0.0f, FuelLevel - m_thrustLevel);
 
-		const FText fuelMessage = FText::Format(FText::FromString("Fuel Level: {0}"), GetFuelRemainingAsPercentage());
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, fuelMessage.ToString());
+			fuelToAdd -= RocketBurnFuelCost;
+		}
 	}
 	else
 	{
 		m_thrustLevel = 0.0f;
 	}
 
-	AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
+	if (IsShipStatusFlagSet(Refuelling))
+	{
+		fuelToAdd += RefuelRate * DeltaTime;
+	}
 
+	FuelLevel += fuelToAdd * DeltaTime;
+
+	AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -66,23 +71,27 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateLeft", IE_Pressed, this, &APlayerShip::SetMovementFlag, E_Movement::RotateLeft );
-	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateLeft", IE_Released, this, &APlayerShip::ClearMovementFlag, E_Movement::RotateLeft);
-	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateRight", IE_Pressed, this, &APlayerShip::SetMovementFlag, E_Movement::RotateRight);
-	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateRight", IE_Released, this, &APlayerShip::ClearMovementFlag, E_Movement::RotateRight);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateLeft", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::RotateLeft );
+	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateLeft", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::RotateLeft);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateRight", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::RotateRight);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateRight", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::RotateRight);
 
-	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustUp", IE_Pressed, this, &APlayerShip::SetMovementFlag, E_Movement::ThrustUp);
-	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustUp", IE_Released, this, &APlayerShip::ClearMovementFlag, E_Movement::ThrustUp);
-	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Pressed, this, &APlayerShip::SetMovementFlag, E_Movement::ThrustDown);
-	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Released, this, &APlayerShip::ClearMovementFlag, E_Movement::ThrustDown);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustUp", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::ThrustUp);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustUp", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::ThrustUp);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::ThrustDown);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::ThrustDown);
 }
 
-void APlayerShip::Refuel()
-{
-	FuelLevel = MaxFuel;
 
-	const FText fuelMessage = FText::Format(FText::FromString("Fuel Level: {0}, Hull Integrity: {1}"), GetFuelRemainingAsPercentage(), GetHullIntegrityAsPercentage());
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, fuelMessage.ToString());
+void APlayerShip::StartRefuelling()
+{
+	SetShipStatusFlag(Refuelling);
+}
+
+
+void APlayerShip::StopRefuelling()
+{
+	ClearShipStatusFlag(Refuelling);
 }
 
 float APlayerShip::GetFuelRemainingAsPercentage() const
@@ -120,18 +129,18 @@ void APlayerShip::ProcessShipDeath()
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("We are dead"));
 }
 
-bool APlayerShip::IsMovementFlagSet(const E_Movement flag) const
+bool APlayerShip::IsShipStatusFlagSet(const E_ShipStatus flag) const
 {
-	return (m_shipMovementFlags & static_cast<E_Movement>(flag)) == static_cast<E_Movement>(flag);
+	return (m_shipStatusFlags & static_cast<E_ShipStatus>(flag)) == static_cast<E_ShipStatus>(flag);
 }
 
-void APlayerShip::SetMovementFlag(const E_Movement flag)
+void APlayerShip::SetShipStatusFlag(const E_ShipStatus flag)
 {
-	m_shipMovementFlags |= flag;
+	m_shipStatusFlags |= flag;
 }
 
-void APlayerShip::ClearMovementFlag(const E_Movement flag)
+void APlayerShip::ClearShipStatusFlag(const E_ShipStatus flag)
 {
-	m_shipMovementFlags &= ~(flag);
+	m_shipStatusFlags &= ~(flag);
 }
 

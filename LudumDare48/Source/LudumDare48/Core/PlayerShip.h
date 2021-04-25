@@ -8,15 +8,16 @@
 #include "PlayerShip.generated.h"
 
 UENUM()
-enum E_Movement
+enum E_ShipStatus
 {
 	RotateLeft = 1 << 0,
 	RotateRight = 1 << 1,
 	ThrustUp = 1 << 2,
-	ThrustDown = 1 << 3
+	ThrustDown = 1 << 3,
+	Refuelling = 1 << 4
 };
 
-DECLARE_DELEGATE_OneParam(FRotationInputComponent, const E_Movement);
+DECLARE_DELEGATE_OneParam(FRotationInputComponent, const E_ShipStatus);
 
 UCLASS()
 class LUDUMDARE48_API APlayerShip : public ACharacter
@@ -39,7 +40,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
-	void Refuel();
+	void StartRefuelling();
+
+	UFUNCTION(BlueprintCallable)
+	void StopRefuelling();
 
 	UFUNCTION(BlueprintCallable)
 	float GetFuelRemainingAsPercentage() const;
@@ -65,6 +69,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
 	float FuelLevel{ 200.0f };
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
+	float RefuelRate{ 25.0f };
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
+	float RocketBurnFuelCost{ 5.0f };
+
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
 	int AsteroidDamage{ 5 };
 
@@ -74,16 +84,16 @@ protected:
 private:
 	void ProcessShipDeath();
 
-	bool IsMovementFlagSet(const E_Movement flag) const;
+	bool IsShipStatusFlagSet(const E_ShipStatus flag) const;
 
 	UFUNCTION()
-	void SetMovementFlag(const E_Movement flag);
+	void SetShipStatusFlag(const E_ShipStatus flag);
 	
 	UFUNCTION()
-	void ClearMovementFlag(const E_Movement flag);
+	void ClearShipStatusFlag(const E_ShipStatus flag);
 
 	float m_thrustLevel{ 0.0f };
 	float m_currentHullIntegrity{ StartHullIntegrity };
 
-	int8 m_shipMovementFlags{ 0 };
+	int8 m_shipStatusFlags{ 0 };
 };
