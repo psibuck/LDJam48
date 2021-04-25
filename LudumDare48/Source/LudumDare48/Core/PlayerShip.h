@@ -39,57 +39,60 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent( class UInputComponent* PlayerInputComponent ) override;
 
-	UFUNCTION( BlueprintCallable )
-		void StartRefuelling();
+	UFUNCTION(BlueprintImplementableEvent)
+	void NotifyShipDeath();
 
 	UFUNCTION( BlueprintCallable )
-		void StopRefuelling();
+	void StartRefuelling();
 
 	UFUNCTION( BlueprintCallable )
-		float GetFuelRemainingAsPercentage() const;
+	void StopRefuelling();
 
 	UFUNCTION( BlueprintCallable )
-		FString GetFuelString( const int fuel_remaining ) const;
+	float GetFuelRemainingAsPercentage() const;
 
 	UFUNCTION( BlueprintCallable )
-		float GetDistanceFromOrigin() const;
+	FString GetFuelString( const int fuel_remaining ) const;
 
 	UFUNCTION( BlueprintCallable )
-		float GetFuelGageSectionOpacity( const int gage_section, bool use_hull ) const;
+	float GetDistanceFromOrigin() const;
 
 	UFUNCTION( BlueprintCallable )
-		float GetHullIntegrityAsPercentage() const;
+	float GetFuelGageSectionOpacity( const int gage_section, bool use_hull ) const;
 
 	UFUNCTION( BlueprintCallable )
-		void ProcessAsteroidCollision();
+	float GetHullIntegrityAsPercentage() const;
+
+	UFUNCTION( BlueprintCallable )
+	void ProcessAsteroidCollision();
 
 protected:
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
-		float RotationalSpeed{ 5.0f };
+	float RotationalSpeed{ 5.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
-		float RocketPower{ 0.2f };
+	float RocketPower{ 0.2f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
-		float MaxFuel{ 1000.0f };
+	float MaxFuel{ 1000.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
-		float FuelLevel{ 200.0f };
+	float FuelLevel{ 200.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
-		float RefuelRate{ 25.0f };
+	float RefuelRate{ 25.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
-		float RocketBurnFuelCost{ 5.0f };
+	float RocketBurnFuelCost{ 5.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
-		int AsteroidDamage{ 5 };
+	int AsteroidDamage{ 5 };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
-		float StartHullIntegrity{ 100 };
+	float StartHullIntegrity{ 100 };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
-		float MaxHullIntegrity{ 100 };
+	float MaxHullIntegrity{ 100 };
 
 private:
 	void ProcessShipDeath();
@@ -97,10 +100,10 @@ private:
 	bool IsShipStatusFlagSet( const E_ShipStatus flag ) const;
 
 	UFUNCTION()
-		void SetShipStatusFlag( const E_ShipStatus flag );
+	void SetShipStatusFlag( const E_ShipStatus flag );
 
 	UFUNCTION()
-		void ClearShipStatusFlag( const E_ShipStatus flag );
+	void ClearShipStatusFlag( const E_ShipStatus flag );
 
 	float m_thrustLevel{ 0.0f };
 	float m_currentHullIntegrity{ StartHullIntegrity };

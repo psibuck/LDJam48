@@ -3,6 +3,11 @@
 
 #include "PlayerShip.h"
 
+#include "HighScoreSave.h"
+#include <Kismet/GameplayStatics.h>
+
+const FString k_SaveGameSlot = "SaveGameSlot";
+
 // Sets default values
 APlayerShip::APlayerShip()
 {
@@ -62,6 +67,10 @@ void APlayerShip::Tick( float DeltaTime )
 
 	FuelLevel += fuelToAdd * DeltaTime;
 
+	if (FuelLevel <= 0.0f)
+	{
+		ProcessShipDeath();
+	}
 	AddMovementInput( GetActorForwardVector(), m_thrustLevel * DeltaTime );
 }
 
@@ -138,7 +147,15 @@ void APlayerShip::ProcessShipDeath()
 {
 	FuelLevel = 0.0f;
 
-	GEngine->AddOnScreenDebugMessage( -1, 15.0f, FColor::Yellow, TEXT( "We are dead" ) );
+	UHighScoreSave* newSave = Cast<UHighScoreSave>(UGameplayStatics::CreateSaveGameObject(UHighScoreSave::StaticClass()));
+	if (newSave)
+	{
+		newSave->PlayerName = "Test High Score";
+		newSave->FurthestDistance = GetDistanceFromOrigin();
+	}
+	UGameplayStatics::SaveGameToSlot(newSave, k_SaveGameSlot, 0);
+
+	NotifyShipDeath();
 }
 
 bool APlayerShip::IsShipStatusFlagSet( const E_ShipStatus flag ) const
