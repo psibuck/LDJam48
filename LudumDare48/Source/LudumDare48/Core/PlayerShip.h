@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetFuelRemainingAsPercentage() const;
 
+	UFUNCTION( BlueprintCallable )
+	FString GetFuelString( const float fuel_remaining ) const;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
 	float RotationalSpeed{ 5.0f };

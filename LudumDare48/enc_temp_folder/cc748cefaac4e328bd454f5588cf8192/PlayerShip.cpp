@@ -57,8 +57,8 @@ void APlayerShip::Tick(float DeltaTime)
 
 	AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
 
-	/*const FText fuelMessage = FText::Format(FText::FromString("Fuel Level: {0}"), GetFuelRemainingAsPercentage());
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, fuelMessage.ToString());*/
+	const FText fuelMessage = FText::Format(FText::FromString("Fuel Level: {0}"), GetFuelRemainingAsPercentage());
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, fuelMessage.ToString());
 }
 
 // Called to bind functionality to input
