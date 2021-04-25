@@ -11,9 +11,9 @@ Using Unreal Version : 4.26.0
 The theme for this years Ludum Dare is **Deeper and Deeper**
 
 # Deepest Space
-Deepest Space is a game inspired by asteroids.
-The aim of the game is to get as deep into space as you can, starting from your home planet.
-Set a high score by getting the furthest you can in the least amount of time! :stopwatch:
-Your rocket's :rocket: fuel will deplete over time, so youl need to harvest planets for more on your trek through space!
+Deepest Space is a game inspired by asteroids.<br/>
+The aim of the game is to get as deep into space as you can, starting from your home planet.<br/>
+Set a high score by getting the furthest you can in the least amount of time! :stopwatch:<br/>
+Your rocket's :rocket: fuel will deplete over time, so youl need to harvest planets for more on your trek through space!<br/>
 
 ![](bart.gif)
