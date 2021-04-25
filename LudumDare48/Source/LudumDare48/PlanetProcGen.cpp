@@ -6,32 +6,32 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Math/UnrealMathUtility.h"
 
-bool UPlanetProcGen::ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient)
+bool UPlanetProcGen::ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient, int sparsity)
 {
 	// Procedurally determines whether this pixel should contain an object given the following coefficients
 
 	const int GRID_STEP = GetGridStep();
 
-	const int baseX = FMath::Abs(pixel.X / cSparsity);
-	const int baseY = FMath::Abs(pixel.Y / cSparsity);
+	const int baseX = FMath::Abs(pixel.X / sparsity);
+	const int baseY = FMath::Abs(pixel.Y / sparsity);
 
-	const int baseXModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseX + (xCoefficient * baseY))), 1);
-	const int baseYModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseY + (yCoefficient * baseX))), 1);
+	const int baseXModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseX + (xCoefficient * baseY), sparsity)), 1);
+	const int baseYModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseY + (yCoefficient * baseX), sparsity)), 1);
 
-	const int xModulo = FMath::Clamp(baseXModulo - (baseXModulo % GRID_STEP), GRID_STEP, cSparsity - GRID_STEP);
-	const int yModulo = FMath::Clamp(baseYModulo - (baseYModulo % GRID_STEP), GRID_STEP, cSparsity + GRID_STEP);
+	const int xModulo = FMath::Clamp(baseXModulo - (baseXModulo % GRID_STEP), GRID_STEP, sparsity - GRID_STEP);
+	const int yModulo = FMath::Clamp(baseYModulo - (baseYModulo % GRID_STEP), GRID_STEP, sparsity + GRID_STEP);
 
-	return pixel.X % cSparsity == xModulo && pixel.Y % cSparsity == yModulo;
+	return pixel.X % sparsity == xModulo && pixel.Y % sparsity == yModulo;
 }
 
 bool UPlanetProcGen::ShouldPixelContainPlanet(FIntPoint pixel)
 {
-	return ShouldGenerateObjectInLocationWithCoefficients(pixel, 3, 7);
+	return ShouldGenerateObjectInLocationWithCoefficients(pixel, 3, 7, cPlanetSparsity);
 }
 
 bool UPlanetProcGen::ShouldPixelContainAsteroid(FIntPoint pixel)
 {
-	return ShouldGenerateObjectInLocationWithCoefficients(pixel, 6, 2);
+	return ShouldGenerateObjectInLocationWithCoefficients(pixel, 6, 2, cAsteroidSparsity);
 }
 
 void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
@@ -41,10 +41,10 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 	// Convert the float vector to a pixel
 	FIntPoint positionAsPixel{ FMath::FloorToInt(position.X), FMath::FloorToInt(position.Y) };
 
-	int xMin = (positionAsPixel.X - (positionAsPixel.X % GRID_STEP)) - cSparsity;
-	int xMax = (positionAsPixel.X + (positionAsPixel.X % GRID_STEP)) + cSparsity;
-	int yMin = (positionAsPixel.Y - (positionAsPixel.Y % GRID_STEP)) - cSparsity;
-	int yMax = (positionAsPixel.Y + (positionAsPixel.Y % GRID_STEP)) + cSparsity;
+	int xMin = (positionAsPixel.X - (positionAsPixel.X % GRID_STEP)) - cPlanetSparsity;
+	int xMax = (positionAsPixel.X + (positionAsPixel.X % GRID_STEP)) + cPlanetSparsity;
+	int yMin = (positionAsPixel.Y - (positionAsPixel.Y % GRID_STEP)) - cPlanetSparsity;
+	int yMax = (positionAsPixel.Y + (positionAsPixel.Y % GRID_STEP)) + cPlanetSparsity;
 
 	for ( int row_index = xMin; row_index < xMax; row_index += GRID_STEP )
 	{
@@ -57,7 +57,7 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 			{
 				continue;
 			}
-			else if (ShouldPixelContainPlanet( gridPoint ))
+			else if (ShouldPixelContainPlanet(gridPoint))
 			{
 				APlanet* newPlanet = GetWorld()->SpawnActor<APlanet>(defaultPlanetClass, location, FRotator::ZeroRotator);
 				planetData.Add(gridPoint, newPlanet);
@@ -69,7 +69,9 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 				if (ShouldPixelContainAsteroid(gridPoint))
 				{
 					AAsteroid* newAsteroid = GetWorld()->SpawnActor<AAsteroid>(defaultAsteroidClass, location, FRotator::ZeroRotator);
-					newAsteroid->SetVelocity(FVector2D(position - location));
+
+					FVector2D newAsteroidVelocity{ FMath::RandPointInCircle(1.0f) };
+					newAsteroid->SetVelocity(newAsteroidVelocity);
 				}
 			}
 		}
@@ -78,15 +80,15 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 
 int UPlanetProcGen::GetGridStep() const
 {
-	return cSparsity / 100;
+	return cPlanetSparsity / 10;
 }
 
-int UPlanetProcGen::GenerateSparsityModulo(int value) const
+int UPlanetProcGen::GenerateSparsityModulo(int value, int sparsity) const
 {
 	for (int i = 0; i < 3; ++i)
 	{
 		value = (FMath::Square(value) + (3 * value) + 328479) % randomSeed;
 	}
 
-	return value % cSparsity;
+	return value % sparsity;
 }

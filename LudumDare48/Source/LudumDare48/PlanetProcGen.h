@@ -33,7 +33,10 @@ public:
 	int randomSeed{ 37242047 };
 
 	UPROPERTY(EditDefaultsOnly)
-	int cSparsity{ 100 };
+	int cPlanetSparsity{ 100 };
+
+	UPROPERTY(EditDefaultsOnly)
+	int cAsteroidSparsity{ 100 };
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlanet> defaultPlanetClass;
@@ -43,12 +46,12 @@ public:
 
 private:
 
-	bool ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient);
+	bool ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient, int sparsity);
 	bool ShouldPixelContainPlanet(FIntPoint pixel);
 	bool ShouldPixelContainAsteroid(FIntPoint pixel);
 
 	int GetGridStep() const;
-	int GenerateSparsityModulo(int value) const;
+	int GenerateSparsityModulo(int value, int sparsity) const;
 
 	UPROPERTY()
 	TMap<FIntPoint, APlanet *> planetData;
