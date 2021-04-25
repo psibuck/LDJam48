@@ -90,9 +90,21 @@ float APlayerShip::GetFuelRemainingAsPercentage() const
 	return ( FuelLevel / MaxFuel ) * 100.0f;
 }
 
-FString APlayerShip::GetFuelString( const float fuel_remaining ) const
+FString APlayerShip::GetFuelString( const int fuel_remaining ) const
 {
-	return FString::SanitizeFloat( fuel_remaining ) += "%";
+	return FString::FromInt( fuel_remaining ) += "%";
+}
+
+float APlayerShip::GetDistanceFromOrigin() const
+{
+	return FVector::Dist2D( GetActorLocation(), FVector( 0, 0, 0 ) ) / 90;
+}
+
+float APlayerShip::GetFuelGageSectionOpacity( const int gage_section ) const
+{
+	const float fuel = GetFuelRemainingAsPercentage();
+	float  opacity = ( fuel - ( 100 - ( gage_section * 10 ) ) ) * 10;
+	return opacity / 100;
 }
 
 float APlayerShip::GetHullIntegrityAsPercentage() const
