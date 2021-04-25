@@ -128,9 +128,6 @@ void APlayerShip::ProcessAsteroidCollision()
 {
 	m_currentHullIntegrity = FMath::Max( 0.0f, m_currentHullIntegrity - AsteroidDamage );
 
-	const FText hullMessage = FText::Format( FText::FromString( "Hull Level: {0}" ), m_currentHullIntegrity );
-	GEngine->AddOnScreenDebugMessage( -1, 15.0f, FColor::Yellow, hullMessage.ToString() );
-
 	if( m_currentHullIntegrity == 0 )
 	{
 		ProcessShipDeath();
