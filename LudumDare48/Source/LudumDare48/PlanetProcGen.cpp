@@ -26,7 +26,7 @@ bool UPlanetProcGen::ShouldPixelContainPlanet(FIntPoint pixel)
 	return pixel.X % cSparsity == xModulo && pixel.Y % cSparsity == yModulo;
 }
 
-void UPlanetProcGen::ProcGenAroundPlayer(FVector2D position)
+void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 {
 	const int GRID_STEP = GetGridStep();
 
@@ -50,7 +50,7 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector2D position)
 			}
 			else if (ShouldPixelContainPlanet( gridPoint ))
 			{
-				FVector location{ static_cast<float>(row_index) + 0.5f, static_cast<float>(column_index) + 0.5f, 0.0f };
+				FVector location{ static_cast<float>(row_index) + 0.5f, static_cast<float>(column_index) + 0.5f, position.Z };
 				APlanet* newPlanet = GetWorld()->SpawnActor<APlanet>(defaultPlanetClass, location, FRotator::ZeroRotator);
 				planetData.Add(gridPoint, newPlanet);
 			}

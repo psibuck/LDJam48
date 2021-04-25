@@ -9,7 +9,7 @@
 #include "CoreMinimal.h"
 
 #include "Math/IntPoint.h"
-#include "Math/Vector2D.h"
+#include "Math/Vector.h"
 
 #include "Planet.h"
 #include "PlanetProcGen.generated.h"
@@ -24,7 +24,7 @@ public:
 	bool ShouldPixelContainPlanet(FIntPoint pixel);
 
 	UFUNCTION(BlueprintCallable)
-	void ProcGenAroundPlayer(FVector2D position);
+	void ProcGenAroundPlayer(FVector position);
 
 	UPROPERTY(BlueprintReadWrite)
 	TSet<FIntPoint> blankPixels;
