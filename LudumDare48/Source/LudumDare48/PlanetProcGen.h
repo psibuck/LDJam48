@@ -11,7 +11,9 @@
 #include "Math/IntPoint.h"
 #include "Math/Vector.h"
 
+#include "Asteroid.h"
 #include "Planet.h"
+
 #include "PlanetProcGen.generated.h"
 
 UCLASS(Blueprintable)
@@ -37,6 +39,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlanet> defaultPlanetClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AAsteroid> defaultAsteroidClass;
 
 private:
 

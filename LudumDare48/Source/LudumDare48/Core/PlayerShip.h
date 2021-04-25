@@ -44,9 +44,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetFuelRemainingAsPercentage() const;
 
-	UFUNCTION( BlueprintCallable )
-	FString GetFuelString( const float fuel_remaining ) const;
+	UFUNCTION(BlueprintCallable)
+	FString GetFuelString(const float fuel_remaining) const;
 
+	UFUNCTION(BlueprintCallable)
+	float GetHullIntegrityAsPercentage() const;
+
+	UFUNCTION(BlueprintCallable)
+	void ProcessAsteroidCollision();
 protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
 	float RotationalSpeed{ 5.0f };
@@ -60,7 +65,15 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
 	float FuelLevel{ 200.0f };
 
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
+	int AsteroidDamage{ 5 };
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings")
+	float StartHullIntegrity{ 100 };
+
 private:
+	void ProcessShipDeath();
+
 	bool IsMovementFlagSet(const E_Movement flag) const;
 
 	UFUNCTION()
@@ -70,6 +83,7 @@ private:
 	void ClearMovementFlag(const E_Movement flag);
 
 	float m_thrustLevel{ 0.0f };
+	float m_currentHullIntegrity{ StartHullIntegrity };
 
-	int8 m_rotationControl{ 0 };
+	int8 m_shipMovementFlags{ 0 };
 };
