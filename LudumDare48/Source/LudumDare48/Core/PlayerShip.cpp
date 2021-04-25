@@ -56,6 +56,9 @@ void APlayerShip::Tick(float DeltaTime)
 	}
 
 	AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
+
+	const FText fuelMessage = FText::Format(FText::FromString("Fuel Level: {0}"), GetFuelRemainingAsPercentage());
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, fuelMessage.ToString());
 }
 
 // Called to bind functionality to input
@@ -72,6 +75,11 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustUp", IE_Released, this, &APlayerShip::ClearMovementFlag, E_Movement::ThrustUp);
 	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Pressed, this, &APlayerShip::SetMovementFlag, E_Movement::ThrustDown);
 	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Released, this, &APlayerShip::ClearMovementFlag, E_Movement::ThrustDown);
+}
+
+void APlayerShip::Refuel()
+{
+	FuelLevel = 0.0f;
 }
 
 float APlayerShip::GetFuelRemainingAsPercentage() const

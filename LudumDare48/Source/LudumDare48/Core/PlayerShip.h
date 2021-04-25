@@ -39,6 +39,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
+	void Refuel();
+
+	UFUNCTION(BlueprintCallable)
 	float GetFuelRemainingAsPercentage() const;
 
 protected:
