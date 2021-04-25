@@ -58,6 +58,7 @@ void APlayerShip::Tick(float DeltaTime)
 	}
 
 	AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
+
 }
 
 // Called to bind functionality to input
@@ -86,7 +87,12 @@ void APlayerShip::Refuel()
 
 float APlayerShip::GetFuelRemainingAsPercentage() const
 {
-	return FuelLevel / MaxFuel * 100.0f;
+	return ( FuelLevel / MaxFuel ) * 100.0f;
+}
+
+FString APlayerShip::GetFuelString( const float fuel_remaining ) const
+{
+	return FString::SanitizeFloat( fuel_remaining ) += "%";
 }
 
 float APlayerShip::GetHullIntegrityAsPercentage() const

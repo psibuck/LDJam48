@@ -9,34 +9,38 @@
 bool UPlanetProcGen::ShouldPixelContainPlanet(FIntPoint pixel)
 {
 	/*
-	Procedurally generates the position of a planet inside this bucket if we determine that one should exist.
-
-	const float pixelMagnitude = pixel.Size();
-
-	const int moduloOffset = FGenericPlatformMath::Min((randomSeed >> 21), 100);
-	const int modulo = FMath::FloorToInt(pixelMagnitude) + moduloOffset;
-
-	return pixelMagnitude == 0 || (randomSeed << 7) % modulo != 0;
+	Procedurally generates the position of a planet inside this pixel if we determine that one should exist.
 	*/
 
-	return true;
+	const int GRID_STEP = GetGridStep();
+
+	const int baseX = FMath::Abs(pixel.X / cSparsity);
+	const int baseY = FMath::Abs(pixel.Y / cSparsity);
+
+	const int baseXModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseX + (3 * baseY))), 1);
+	const int baseYModulo = FMath::Max(FMath::Abs(GenerateSparsityModulo(baseY + (7 * baseX))), 1);
+
+	const int xModulo = FMath::Clamp( baseXModulo - (baseXModulo % GRID_STEP), GRID_STEP, cSparsity - GRID_STEP);
+	const int yModulo = FMath::Clamp( baseYModulo - (baseYModulo % GRID_STEP), GRID_STEP, cSparsity + GRID_STEP);
+
+	return pixel.X % cSparsity == xModulo && pixel.Y % cSparsity == yModulo;
 }
 
 void UPlanetProcGen::ProcGenAroundPlayer(FVector2D position)
 {
-	const int SQUARE_WIDTH = 10;
+	const int GRID_STEP = GetGridStep();
 
 	// Convert the float vector to a pixel
 	FIntPoint positionAsPixel{ FMath::FloorToInt(position.X), FMath::FloorToInt(position.Y) };
 
-	int xMin = positionAsPixel.X - SQUARE_WIDTH;
-	int xMax = positionAsPixel.X + SQUARE_WIDTH;
-	int yMin = positionAsPixel.Y - SQUARE_WIDTH;
-	int yMax = positionAsPixel.Y + SQUARE_WIDTH;
+	int xMin = (positionAsPixel.X - (positionAsPixel.X % GRID_STEP)) - cSparsity;
+	int xMax = (positionAsPixel.X + (positionAsPixel.X % GRID_STEP)) + cSparsity;
+	int yMin = (positionAsPixel.Y - (positionAsPixel.Y % GRID_STEP)) - cSparsity;
+	int yMax = (positionAsPixel.Y + (positionAsPixel.Y % GRID_STEP)) + cSparsity;
 
-	for ( int row_index = xMin; row_index < xMax; ++row_index )
+	for ( int row_index = xMin; row_index < xMax; row_index += GRID_STEP )
 	{
-		for ( int column_index = yMin; column_index < yMax; ++column_index )
+		for ( int column_index = yMin; column_index < yMax; column_index += GRID_STEP )
 		{
 			FIntPoint gridPoint{ row_index, column_index };
 
@@ -46,9 +50,8 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector2D position)
 			}
 			else if (ShouldPixelContainPlanet( gridPoint ))
 			{
-				APlanet * newPlanet = GetWorld()->SpawnActor<APlanet>(defaultPlanetClass);
 				FVector location{ static_cast<float>(row_index) + 0.5f, static_cast<float>(column_index) + 0.5f, 0.0f };
-				newPlanet->SetActorLocation(location);
+				APlanet* newPlanet = GetWorld()->SpawnActor<APlanet>(defaultPlanetClass, location, FRotator::ZeroRotator);
 				planetData.Add(gridPoint, newPlanet);
 			}
 			else
@@ -57,4 +60,19 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector2D position)
 			}
 		}
 	}
+}
+
+int UPlanetProcGen::GetGridStep() const
+{
+	return cSparsity / 100;
+}
+
+int UPlanetProcGen::GenerateSparsityModulo(int value) const
+{
+	for (int i = 0; i < 3; ++i)
+	{
+		value = (FMath::Square(value) + (3 * value) + 328479) % randomSeed;
+	}
+
+	return value % cSparsity;
 }

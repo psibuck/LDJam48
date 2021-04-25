@@ -32,7 +32,10 @@ public:
 	TSet<FIntPoint> blankPixels;
 
 	UPROPERTY(BlueprintReadWrite)
-	int randomSeed{ 0 };
+	int randomSeed{ 37242047 };
+
+	UPROPERTY(EditDefaultsOnly)
+	int cSparsity{ 100 };
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<APlanet> defaultPlanetClass;
@@ -41,6 +44,9 @@ public:
 	TSubclassOf<AAsteroid> defaultAsteroidClass;
 
 private:
+
+	int GetGridStep() const;
+	int GenerateSparsityModulo(int value) const;
 
 	UPROPERTY()
 	TMap<FIntPoint, APlanet *> planetData;
