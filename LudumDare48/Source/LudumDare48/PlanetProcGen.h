@@ -9,7 +9,7 @@
 #include "CoreMinimal.h"
 
 #include "Math/IntPoint.h"
-#include "Math/Vector2D.h"
+#include "Math/Vector.h"
 
 #include "Asteroid.h"
 #include "Planet.h"
@@ -23,10 +23,8 @@ class LUDUMDARE48_API UPlanetProcGen : public UObject
 
 public:
 
-	bool ShouldPixelContainPlanet(FIntPoint pixel);
-
 	UFUNCTION(BlueprintCallable)
-	void ProcGenAroundPlayer(FVector2D position);
+	void ProcGenAroundPlayer(FVector position);
 
 	UPROPERTY(BlueprintReadWrite)
 	TSet<FIntPoint> blankPixels;
@@ -44,6 +42,10 @@ public:
 	TSubclassOf<AAsteroid> defaultAsteroidClass;
 
 private:
+
+	bool ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient);
+	bool ShouldPixelContainPlanet(FIntPoint pixel);
+	bool ShouldPixelContainAsteroid(FIntPoint pixel);
 
 	int GetGridStep() const;
 	int GenerateSparsityModulo(int value) const;
