@@ -59,6 +59,7 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 			}
 			else if (ShouldPixelContainPlanet(gridPoint))
 			{
+				location += {0.0f, 0.0f, -250.0f};
 				APlanet* newPlanet = GetWorld()->SpawnActor<APlanet>(defaultPlanetClass, location, FRotator::ZeroRotator);
 				planetData.Add(gridPoint, newPlanet);
 			}
