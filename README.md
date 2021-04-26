@@ -17,3 +17,8 @@ Set a high score by getting the furthest you can in the least amount of time! :s
 Your rocket's :rocket: fuel will deplete over time, so youl need to harvest planets for more on your trek through space!<br/>
 
 ![](bart.gif)
+
+# About Us
+We are three game developers who primarily work with C++
+However we dont have the most experience with Unreal!
+So we're using this gamejam as an opportunity to dive straight in and learn some Unreal!
