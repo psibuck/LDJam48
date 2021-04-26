@@ -70,6 +70,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetThrustPercentage() const { return m_thrustPercentage; }
 
+	UFUNCTION(BlueprintCallable)
+	float GetTimeAliveInSeconds() const { return m_startTime; }
+
 	UFUNCTION( BlueprintCallable )
 	void ProcessAsteroidCollision();
 
@@ -126,6 +129,7 @@ private:
 
 	float m_currentHullIntegrity{ StartHullIntegrity };
 	float m_currentFuelLevel{ StartFuelLevel };
+	float m_startTime{ 0.0f };
 
 	int8 m_shipStatusFlags{ 0 };
 

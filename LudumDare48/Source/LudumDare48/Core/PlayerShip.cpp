@@ -20,6 +20,7 @@ void APlayerShip::StartGame()
 	m_currentHullIntegrity = StartHullIntegrity;
 	m_currentFuelLevel = StartFuelLevel;
 	m_alive = true;
+	m_startTime = UGameplayStatics::GetRealTimeSeconds(GetWorld());
 
 	Restart();
 	SetActorLocation(FVector(0, 0, 0));
@@ -168,10 +169,6 @@ void APlayerShip::ProcessAsteroidCollision()
 
 void APlayerShip::ProcessShipDeath()
 {
-	m_alive = false;
-	m_currentFuelLevel = 0.0f;
-	m_thrustPercentage = 0.0f;
-
 	UHighScoreSave* currentHighScore = Cast<UHighScoreSave>(UGameplayStatics::LoadGameFromSlot(k_SaveGameSlot, 0));
 	if (!currentHighScore || GetDistanceFromOrigin() > currentHighScore->FurthestDistance)
 	{
@@ -181,9 +178,16 @@ void APlayerShip::ProcessShipDeath()
 			newSave->PlayerName = m_shipName;
 			newSave->FurthestDistance = GetDistanceFromOrigin();
 			newSave->Position = GetActorLocation();
+			newSave->TimeAliveSeconds = UGameplayStatics::GetRealTimeSeconds(GetWorld()) - m_startTime;
 		}
 		UGameplayStatics::SaveGameToSlot(newSave, k_SaveGameSlot, 0);
 	}
+
+
+	m_alive = false;
+	m_currentFuelLevel = 0.0f;
+	m_thrustPercentage = 0.0f;
+	m_startTime = 0.0f;
 
 	NotifyShipDeath();
 }

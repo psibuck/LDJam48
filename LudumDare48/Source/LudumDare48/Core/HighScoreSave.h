@@ -36,4 +36,6 @@ public:
 	float FurthestDistance{ 0.0f };
 	UPROPERTY(BlueprintReadOnly)
 	FVector Position;
+	UPROPERTY(BlueprintReadOnly)
+	float TimeAliveSeconds{ 0.0f };
 };
