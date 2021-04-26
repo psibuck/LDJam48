@@ -3,6 +3,7 @@ DerivedDataCache/
 Intermediate/
 Saved/
 .vs/
+Build/
 Content/CustomLevels
 Content/DeepSpace/Blueprint/ArchieGameMode.uasset
 
