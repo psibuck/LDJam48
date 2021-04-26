@@ -145,7 +145,7 @@ float APlayerShip::GetFuelGageSectionOpacity( const int gage_section, bool use_h
 	}
 
 	float opacity = ( percentage - ( 100 - ( gage_section * 10 ) ) ) * 10;
-	return 1 - opacity / 100;
+	return opacity / 100;
 }
 
 float APlayerShip::GetHullIntegrityAsPercentage() const
