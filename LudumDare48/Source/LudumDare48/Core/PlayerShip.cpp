@@ -95,19 +95,23 @@ void APlayerShip::Tick( float DeltaTime )
 }
 
 // Called to bind functionality to input
-void APlayerShip::SetupPlayerInputComponent( UInputComponent* PlayerInputComponent )
+void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::SetupPlayerInputComponent( PlayerInputComponent );
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction<FRotationInputComponent>( "RotateLeft", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::RotateLeft );
-	PlayerInputComponent->BindAction<FRotationInputComponent>( "RotateLeft", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::RotateLeft );
-	PlayerInputComponent->BindAction<FRotationInputComponent>( "RotateRight", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::RotateRight );
-	PlayerInputComponent->BindAction<FRotationInputComponent>( "RotateRight", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::RotateRight );
+	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateLeft", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::RotateLeft);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateLeft", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::RotateLeft);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateRight", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::RotateRight);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("RotateRight", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::RotateRight);
 
-	PlayerInputComponent->BindAction<FRotationInputComponent>( "ThrustUp", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::ThrustUp );
-	PlayerInputComponent->BindAction<FRotationInputComponent>( "ThrustUp", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::ThrustUp );
-	PlayerInputComponent->BindAction<FRotationInputComponent>( "ThrustDown", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::ThrustDown );
-	PlayerInputComponent->BindAction<FRotationInputComponent>( "ThrustDown", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::ThrustDown );
+	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustUp", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::ThrustUp);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustUp", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::ThrustUp);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Pressed, this, &APlayerShip::SetShipStatusFlag, E_ShipStatus::ThrustDown);
+	PlayerInputComponent->BindAction<FRotationInputComponent>("ThrustDown", IE_Released, this, &APlayerShip::ClearShipStatusFlag, E_ShipStatus::ThrustDown);
+
+	PlayerInputComponent->BindAction("FullThrust", IE_Pressed, this, &APlayerShip::FullThrust);
+	PlayerInputComponent->BindAction("FullReverse", IE_Pressed, this, &APlayerShip::FullReverse);
+	PlayerInputComponent->BindAction("KillEngines", IE_Pressed, this, &APlayerShip::KillEngines);
 }
 
 void APlayerShip::StartRefuelling()
