@@ -169,14 +169,18 @@ void APlayerShip::ProcessShipDeath()
 	m_currentFuelLevel = 0.0f;
 	m_thrustPercentage = 0.0f;
 
-	UHighScoreSave* newSave = Cast<UHighScoreSave>(UGameplayStatics::CreateSaveGameObject(UHighScoreSave::StaticClass()));
-	if (newSave)
+	UHighScoreSave* currentHighScore = Cast<UHighScoreSave>(UGameplayStatics::LoadGameFromSlot(k_SaveGameSlot, 0));
+	if (!currentHighScore || GetDistanceFromOrigin() > currentHighScore->FurthestDistance)
 	{
-		newSave->PlayerName = m_shipName;
-		newSave->FurthestDistance = GetDistanceFromOrigin();
-		newSave->Position = GetActorLocation();
+		UHighScoreSave* newSave = Cast<UHighScoreSave>(UGameplayStatics::CreateSaveGameObject(UHighScoreSave::StaticClass()));
+		if (newSave)
+		{
+			newSave->PlayerName = m_shipName;
+			newSave->FurthestDistance = GetDistanceFromOrigin();
+			newSave->Position = GetActorLocation();
+		}
+		UGameplayStatics::SaveGameToSlot(newSave, k_SaveGameSlot, 0);
 	}
-	UGameplayStatics::SaveGameToSlot(newSave, k_SaveGameSlot, 0);
 
 	NotifyShipDeath();
 }
