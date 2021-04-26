@@ -63,23 +63,20 @@ void APlayerShip::Tick( float DeltaTime )
 			{
 				if (IsShipStatusFlagSet(ThrustUp))
 				{
-					m_thrustLevel += RocketPower;
-					fuelToAdd -= RocketBurnFuelCost;
+					m_thrustPercentage = FMath::Min(100.0f, m_thrustPercentage + 1.0f);
 				}
 				else
 				{
-					if (m_thrustLevel > 0.0f)
-					{
-						fuelToAdd -= RocketBurnFuelCost;
-					}
-					m_thrustLevel = FMath::Max(0.0f, m_thrustLevel - RocketPower);
+					m_thrustPercentage = FMath::Max(-100.0f, m_thrustPercentage - 1.0f); 
 				}
 			}
 		}
 		else
 		{
-			m_thrustLevel = 0.0f;
+			m_thrustPercentage = 0.0f;
 		}
+
+		fuelToAdd -= FMath::Abs(m_thrustPercentage) * RocketBurnFuelCost;
 
 		if (IsShipStatusFlagSet(Refuelling))
 		{
@@ -92,7 +89,8 @@ void APlayerShip::Tick( float DeltaTime )
 		{
 			ProcessShipDeath();
 		}
-		AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FText::Format( FText::FromString("Thrust Level : {0}"), m_thrustPercentage).ToString());
+		AddMovementInput(GetActorForwardVector(), m_thrustPercentage * MaxThrust * DeltaTime);
 	}
 }
 
@@ -146,7 +144,7 @@ float APlayerShip::GetFuelGageSectionOpacity( const int gage_section, bool use_h
 		percentage = GetHullIntegrityAsPercentage();
 	}
 
-	float  opacity = ( percentage - ( 100 - ( gage_section * 10 ) ) ) * 10;
+	float opacity = ( percentage - ( 100 - ( gage_section * 10 ) ) ) * 10;
 	return opacity / 100;
 }
 
@@ -169,7 +167,7 @@ void APlayerShip::ProcessShipDeath()
 {
 	m_alive = false;
 	m_currentFuelLevel = 0.0f;
-	m_thrustLevel = 0.0f;
+	m_thrustPercentage = 0.0f;
 
 	UHighScoreSave* newSave = Cast<UHighScoreSave>(UGameplayStatics::CreateSaveGameObject(UHighScoreSave::StaticClass()));
 	if (newSave)

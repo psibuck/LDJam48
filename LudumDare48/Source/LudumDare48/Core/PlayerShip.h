@@ -75,7 +75,10 @@ protected:
 	float RotationalSpeed{ 5.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
-	float RocketPower{ 0.2f };
+	float MaxThrust{ 0.05f };
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings")
+	float ThrustStepSize{ MaxThrust / 100.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
 	float MaxFuel{ 1000.0f };
@@ -109,7 +112,8 @@ private:
 	UFUNCTION()
 	void ClearShipStatusFlag( const E_ShipStatus flag );
 
-	float m_thrustLevel{ 0.0f };
+	float m_thrustPercentage{ 0.0f };
+
 	float m_currentHullIntegrity{ StartHullIntegrity };
 	float m_currentFuelLevel{ StartFuelLevel };
 
