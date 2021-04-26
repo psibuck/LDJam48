@@ -172,8 +172,9 @@ void APlayerShip::ProcessShipDeath()
 	UHighScoreSave* newSave = Cast<UHighScoreSave>(UGameplayStatics::CreateSaveGameObject(UHighScoreSave::StaticClass()));
 	if (newSave)
 	{
-		newSave->PlayerName = "Test High Score";
+		newSave->PlayerName = m_shipName;
 		newSave->FurthestDistance = GetDistanceFromOrigin();
+		newSave->Position = GetActorLocation();
 	}
 	UGameplayStatics::SaveGameToSlot(newSave, k_SaveGameSlot, 0);
 

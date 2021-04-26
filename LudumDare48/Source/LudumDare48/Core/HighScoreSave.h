@@ -31,7 +31,9 @@ class LUDUMDARE48_API UHighScoreSave : public USaveGame
 	GENERATED_BODY()
 public:
 	UPROPERTY(BlueprintReadOnly)
-	FName PlayerName;
+	FText PlayerName;
 	UPROPERTY(BlueprintReadOnly)
 	float FurthestDistance{ 0.0f };
+	UPROPERTY(BlueprintReadOnly)
+	FVector Position;
 };

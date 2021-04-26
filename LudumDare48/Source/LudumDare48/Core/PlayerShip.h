@@ -67,8 +67,14 @@ public:
 	UFUNCTION( BlueprintCallable )
 	float GetHullIntegrityAsPercentage() const;
 
+	UFUNCTION(BlueprintCallable)
+	float GetThrustPercentage() const { return m_thrustPercentage; }
+
 	UFUNCTION( BlueprintCallable )
 	void ProcessAsteroidCollision();
+
+	UFUNCTION(BlueprintCallable)
+	void SetShipName(FText shipName) { m_shipName = shipName; }
 
 protected:
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Initial Settings" )
@@ -119,5 +125,6 @@ private:
 
 	int8 m_shipStatusFlags{ 0 };
 
+	FText m_shipName;
 	bool m_alive{ false };
 };
