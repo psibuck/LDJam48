@@ -148,6 +148,24 @@ float APlayerShip::GetFuelGageSectionOpacity( const int gage_section, bool use_h
 	return opacity / 100;
 }
 
+float APlayerShip::GetThrustSectionOpacity( const int gage_section, bool is_reverse ) const
+{
+	if( GetThrustPercentage() > -1 && is_reverse )
+	{
+		return 0;
+	}
+
+	if( GetThrustPercentage() < 1 && !is_reverse )
+	{
+		return 0;
+	}
+
+	float percentage = FMath::Abs( GetThrustPercentage() );
+	float opacity = ( percentage - ( 100 - ( gage_section * 10 ) ) ) * 10;
+	return opacity / 100;
+}
+
+
 float APlayerShip::GetHullIntegrityAsPercentage() const
 {
 	return m_currentHullIntegrity / MaxHullIntegrity * 100.0f;
