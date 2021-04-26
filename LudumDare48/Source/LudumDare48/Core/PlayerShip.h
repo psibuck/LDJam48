@@ -111,6 +111,10 @@ protected:
 		float MaxHullIntegrity{ 100 };
 
 private:
+	void FullThrust() { m_thrustPercentage = 100.0f;	}
+	void FullReverse() { m_thrustPercentage = -100.0f; }
+	void KillEngines() { m_thrustPercentage = 0.0f; }
+
 	void ProcessShipDeath();
 
 	bool IsShipStatusFlagSet( const E_ShipStatus flag ) const;
