@@ -80,7 +80,7 @@ void APlayerShip::Tick( float DeltaTime )
 
 		if (IsShipStatusFlagSet(Refuelling))
 		{
-			fuelToAdd = RefuelRate;
+			fuelToAdd += RefuelRate;
 		}
 
 		m_currentFuelLevel = FMath::Max(0.0f, FMath::Min(MaxFuel, m_currentFuelLevel + fuelToAdd * DeltaTime));
@@ -137,7 +137,7 @@ float APlayerShip::GetDistanceFromOrigin() const
 
 float APlayerShip::GetFuelGageSectionOpacity( const int gage_section, bool use_hull ) const
 {
-	float percentage = GetFuelRemainingAsPercentage();
+	float percentage = FMath::Abs(GetFuelRemainingAsPercentage());
 
 	if( use_hull )
 	{
@@ -145,7 +145,7 @@ float APlayerShip::GetFuelGageSectionOpacity( const int gage_section, bool use_h
 	}
 
 	float opacity = ( percentage - ( 100 - ( gage_section * 10 ) ) ) * 10;
-	return opacity / 100;
+	return 1 - opacity / 100;
 }
 
 float APlayerShip::GetHullIntegrityAsPercentage() const
