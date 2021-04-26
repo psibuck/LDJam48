@@ -114,4 +114,6 @@ private:
 	float m_currentFuelLevel{ StartFuelLevel };
 
 	int8 m_shipStatusFlags{ 0 };
+
+	bool m_alive{ false };
 };

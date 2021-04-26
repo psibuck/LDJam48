@@ -19,7 +19,9 @@ void APlayerShip::StartGame()
 {
 	m_currentHullIntegrity = StartHullIntegrity;
 	m_currentFuelLevel = StartFuelLevel;
+	m_alive = true;
 
+	Restart();
 	SetActorLocation(FVector(0, 0, 0));
 }
 
@@ -39,52 +41,59 @@ void APlayerShip::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
 
-	float fuelToAdd{ 0.0f };
-	if(m_currentFuelLevel > 0.0f )
+	if (m_alive)
 	{
-		float rotationToApply = 0.0f;
-		if( IsShipStatusFlagSet( RotateLeft ) != IsShipStatusFlagSet( RotateRight ) )
+		float fuelToAdd{ 0.0f };
+		if (m_currentFuelLevel > 0.0f)
 		{
+			float rotationToApply = 0.0f;
+			if (IsShipStatusFlagSet(RotateLeft) != IsShipStatusFlagSet(RotateRight))
+			{
 
-			if( IsShipStatusFlagSet( RotateRight ) )
-			{
-				AddControllerYawInput( RotationalSpeed * DeltaTime );
+				if (IsShipStatusFlagSet(RotateRight))
+				{
+					AddControllerYawInput(RotationalSpeed * DeltaTime);
+				}
+				else
+				{
+					AddControllerYawInput(-RotationalSpeed * DeltaTime);
+				}
 			}
-			else
+			if (IsShipStatusFlagSet(ThrustDown) != IsShipStatusFlagSet(ThrustUp))
 			{
-				AddControllerYawInput( -RotationalSpeed * DeltaTime );
+				if (IsShipStatusFlagSet(ThrustUp))
+				{
+					m_thrustLevel += RocketPower;
+					fuelToAdd -= RocketBurnFuelCost;
+				}
+				else
+				{
+					if (m_thrustLevel > 0.0f)
+					{
+						fuelToAdd -= RocketBurnFuelCost;
+					}
+					m_thrustLevel = FMath::Max(0.0f, m_thrustLevel - RocketPower);
+				}
 			}
 		}
-		if( IsShipStatusFlagSet( ThrustDown ) != IsShipStatusFlagSet( ThrustUp ) )
+		else
 		{
-			if( IsShipStatusFlagSet( ThrustUp ) )
-			{
-				m_thrustLevel += RocketPower;
-				fuelToAdd -= RocketBurnFuelCost;
-			}
-			else
-			{
-				m_thrustLevel = FMath::Max( 0.0f, m_thrustLevel - RocketPower );
-			}
+			m_thrustLevel = 0.0f;
 		}
-	}
-	else
-	{
-		m_thrustLevel = 0.0f;
-	}
 
-	if( IsShipStatusFlagSet( Refuelling ) )
-	{
-		fuelToAdd += RefuelRate * DeltaTime;
-	}
+		if (IsShipStatusFlagSet(Refuelling))
+		{
+			fuelToAdd = RefuelRate;
+		}
 
-	m_currentFuelLevel += fuelToAdd * DeltaTime;
+		m_currentFuelLevel = FMath::Max(0.0f, FMath::Min(MaxFuel, m_currentFuelLevel + fuelToAdd * DeltaTime));
 
-	if (m_currentFuelLevel <= 0.0f)
-	{
-		ProcessShipDeath();
+		if (m_currentFuelLevel <= 0.0f)
+		{
+			ProcessShipDeath();
+		}
+		AddMovementInput(GetActorForwardVector(), m_thrustLevel * DeltaTime);
 	}
-	AddMovementInput( GetActorForwardVector(), m_thrustLevel * DeltaTime );
 }
 
 // Called to bind functionality to input
@@ -158,6 +167,7 @@ void APlayerShip::ProcessAsteroidCollision()
 
 void APlayerShip::ProcessShipDeath()
 {
+	m_alive = false;
 	m_currentFuelLevel = 0.0f;
 	m_thrustLevel = 0.0f;
 
