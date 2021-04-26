@@ -15,10 +15,23 @@ APlayerShip::APlayerShip()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void APlayerShip::StartGame()
+{
+	m_currentHullIntegrity = StartHullIntegrity;
+	m_currentFuelLevel = StartFuelLevel;
+
+	SetActorLocation(FVector(0, 0, 0));
+}
+
 // Called when the game starts or when spawned
 void APlayerShip::BeginPlay()
 {
 	Super::BeginPlay();
+
+	m_currentHullIntegrity = StartHullIntegrity;
+	m_currentFuelLevel = StartFuelLevel;
+
+	SetActorLocation(FVector(0, 0, 0));
 }
 
 // Called every frame
@@ -27,7 +40,7 @@ void APlayerShip::Tick( float DeltaTime )
 	Super::Tick( DeltaTime );
 
 	float fuelToAdd{ 0.0f };
-	if( FuelLevel > 0.0f )
+	if(m_currentFuelLevel > 0.0f )
 	{
 		float rotationToApply = 0.0f;
 		if( IsShipStatusFlagSet( RotateLeft ) != IsShipStatusFlagSet( RotateRight ) )
@@ -65,9 +78,9 @@ void APlayerShip::Tick( float DeltaTime )
 		fuelToAdd += RefuelRate * DeltaTime;
 	}
 
-	FuelLevel += fuelToAdd * DeltaTime;
+	m_currentFuelLevel += fuelToAdd * DeltaTime;
 
-	if (FuelLevel <= 0.0f)
+	if (m_currentFuelLevel <= 0.0f)
 	{
 		ProcessShipDeath();
 	}
@@ -102,7 +115,7 @@ void APlayerShip::StopRefuelling()
 
 float APlayerShip::GetFuelRemainingAsPercentage() const
 {
-	return ( FuelLevel / MaxFuel ) * 100.0f;
+	return (m_currentFuelLevel / MaxFuel ) * 100.0f;
 }
 
 FString APlayerShip::GetFuelString( const int fuel_remaining ) const
@@ -145,7 +158,8 @@ void APlayerShip::ProcessAsteroidCollision()
 
 void APlayerShip::ProcessShipDeath()
 {
-	FuelLevel = 0.0f;
+	m_currentFuelLevel = 0.0f;
+	m_thrustLevel = 0.0f;
 
 	UHighScoreSave* newSave = Cast<UHighScoreSave>(UGameplayStatics::CreateSaveGameObject(UHighScoreSave::StaticClass()));
 	if (newSave)

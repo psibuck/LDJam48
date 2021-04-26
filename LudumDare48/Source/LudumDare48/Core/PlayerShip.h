@@ -27,6 +27,7 @@ class LUDUMDARE48_API APlayerShip : public ACharacter
 public:
 	// Sets default values for this character's properties
 	APlayerShip();
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -41,6 +42,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void NotifyShipDeath();
+
+	UFUNCTION(BlueprintCallable)
+	void StartGame();
 
 	UFUNCTION( BlueprintCallable )
 	void StartRefuelling();
@@ -77,7 +81,7 @@ protected:
 	float MaxFuel{ 1000.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
-	float FuelLevel{ 200.0f };
+	float StartFuelLevel{ 200.0f };
 
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly, Category = "Deepest Space | Fuel Settings" )
 	float RefuelRate{ 25.0f };
@@ -107,6 +111,7 @@ private:
 
 	float m_thrustLevel{ 0.0f };
 	float m_currentHullIntegrity{ StartHullIntegrity };
+	float m_currentFuelLevel{ StartFuelLevel };
 
 	int8 m_shipStatusFlags{ 0 };
 };
