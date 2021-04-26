@@ -89,7 +89,6 @@ void APlayerShip::Tick( float DeltaTime )
 		{
 			ProcessShipDeath();
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FText::Format( FText::FromString("Thrust Level : {0}"), m_thrustPercentage).ToString());
 		AddMovementInput(GetActorForwardVector(), m_thrustPercentage * MaxThrust * DeltaTime);
 	}
 }
