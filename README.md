@@ -1,4 +1,4 @@
-![Title Banner](Title Banner.png)
+![Banner](Title_Banner.png)
 
 # Deepest Space :rocket: :milky_way:
 Our entry to the [48th Ludum Dare](https://ldjam.com/) gamejam! 
