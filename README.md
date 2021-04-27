@@ -26,9 +26,8 @@ A & D - Rotate to left or right</br>
 # Known Bugs ( We're working on it )
 - Not enough asteroids are spawning</br>
 
-
-[Distance.gif]
-[Time.gif]
+![Dist](Distance.gif)
+![Time](Time.gif)
 
 
 # About Us
@@ -40,4 +39,4 @@ So we're using this gamejam as an opportunity to dive straight in and learn some
 - Gameplay & Rocket Control : Archie Buck
 - Proc Generation & Gameplay : Dr Matt Taylor
 
-[bart.gif]
+![bart](bart.gif)
