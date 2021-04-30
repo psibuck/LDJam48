@@ -22,15 +22,6 @@ void AAsteroid::SetSpeed( float newSpeed )
 	speed = newSpeed;
 	AsteroidScale = speed / 1000;
 
-	if( speed > 90 )
-	{
-		AsteroidScale -= 0.20f;
-	}
-	else
-	{
-		AsteroidScale += 0.10f;
-	}
-
 	NotifySpeedChange();
 }
 

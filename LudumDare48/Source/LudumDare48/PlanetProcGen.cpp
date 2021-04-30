@@ -6,7 +6,7 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Math/UnrealMathUtility.h"
 
-const FVector HOME_PLANET_LOCATION{ 100.0f , -245.0f, -250.0f };
+const FVector HOME_PLANET_LOCATION{ 100.0f , -175.0f, -250.0f };
 
 bool UPlanetProcGen::ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient, int sparsity)
 {
