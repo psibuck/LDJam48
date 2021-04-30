@@ -21,6 +21,5 @@ void APlanet::BeginPlay()
 void APlanet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 

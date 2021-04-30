@@ -29,7 +29,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TSet<FIntPoint> blankPixels;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly)
 	int randomSeed{ 37242047 };
 
 	UPROPERTY(EditDefaultsOnly)
@@ -55,4 +55,6 @@ private:
 
 	UPROPERTY()
 	TMap<FIntPoint, APlanet *> planetData;
+
+	APlanet* m_HomePlanet{ nullptr };
 };

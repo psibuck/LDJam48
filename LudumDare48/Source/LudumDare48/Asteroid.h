@@ -15,15 +15,21 @@ class LUDUMDARE48_API AAsteroid : public AActor
 	GENERATED_BODY()
 
 public:
-
 	AAsteroid();
+
+	UFUNCTION( BlueprintImplementableEvent )
+	void NotifySpeedChange();
 
 	virtual void Tick(float deltaTime) override;
 
 	void SetVelocity(FVector2D newVelocity);
+	void SetSpeed( float newSpeed );
 
 	FVector2D velocity;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY( BlueprintReadWrite )
 	float speed{ 1.0f };
+
+	UPROPERTY( BlueprintReadWrite )
+	float AsteroidScale{ 0.15f };
 };

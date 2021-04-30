@@ -6,6 +6,8 @@
 #include "GenericPlatform/GenericPlatformMath.h"
 #include "Math/UnrealMathUtility.h"
 
+const FVector HOME_PLANET_LOCATION{ 100.0f , -245.0f, -250.0f };
+
 bool UPlanetProcGen::ShouldGenerateObjectInLocationWithCoefficients(FIntPoint pixel, int xCoefficient, int yCoefficient, int sparsity)
 {
 	// Procedurally determines whether this pixel should contain an object given the following coefficients
@@ -51,6 +53,14 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 		for ( int column_index = yMin; column_index < yMax; column_index += GRID_STEP )
 		{
 			FIntPoint gridPoint{ row_index, column_index };
+
+			if( m_HomePlanet == nullptr )
+			{
+				m_HomePlanet = GetWorld()->SpawnActor<APlanet>( defaultPlanetClass, HOME_PLANET_LOCATION, FRotator::ZeroRotator );
+				planetData.Add( gridPoint, m_HomePlanet );
+				continue;
+			}	
+
 			FVector location{ static_cast<float>(row_index) + 0.5f, static_cast<float>(column_index) + 0.5f, position.Z };
 
 			if (blankPixels.Find(gridPoint) || planetData.Find(gridPoint))
@@ -70,6 +80,7 @@ void UPlanetProcGen::ProcGenAroundPlayer(FVector position)
 				if (ShouldPixelContainAsteroid(gridPoint))
 				{
 					AAsteroid* newAsteroid = GetWorld()->SpawnActor<AAsteroid>(defaultAsteroidClass, location, FRotator::ZeroRotator);
+					newAsteroid->SetSpeed( FMath::RandRange( 40.0f, 150.0f ) );
 
 					FVector2D newAsteroidVelocity{ FMath::RandPointInCircle(1.0f) };
 					newAsteroid->SetVelocity(newAsteroidVelocity);
